@@ -5,9 +5,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const promise_1 = __importDefault(require("mysql2/promise"));
 const connection = promise_1.default.createPool({
-    host: 'sukabumi.karixa.co.id',
+    host: process.env.DB_HOST,
     user: 'nimda',
-    password: 'B0r0k0k0K_',
+    password: process.env.DB_PASS,
     database: 'payroll_new'
 });
 connection.getConnection()
