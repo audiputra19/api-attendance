@@ -40,7 +40,7 @@ export const forgotPass = async (req: Request, res: Response) => {
 
         const resetToken = generateTokenForgotPass(user.nik);
 
-        const resetUrl = `http://localhost:3000/auth/reset-pass/${resetToken}`;
+        const resetUrl = `https://project-absensi.vercel.app/auth/reset-pass/${resetToken}`;
         const mailOptions = {
             from: '"Admin IT" <curhatfilm19@gmail.com>',
             to: email,
