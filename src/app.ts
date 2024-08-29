@@ -5,13 +5,13 @@ import attendanceRoutes from './routes/attendanceRoutes';
 import cors from 'cors';
 import authRouter from './routes/authRoutes';
 import forgotPassRouter from './routes/forgotPassRoutes';
-
+import path from 'path';
 
 const app = express();  
 
 app.use(cors({
-    origin: 'https:/api.karixa.co.id',
-}))
+    origin: 'http://karixa.co.id',
+}));
 
 app.use(express.json());
  

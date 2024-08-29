@@ -40,7 +40,8 @@ export const distanceValidation = async (req: Request, res: Response, next: Next
         if(distance <= 30){
             next();
         } else {
-            return res.status(400).json({ message: 'Anda berada diluar jangkauan 30 meter' })
+            // return res.status(400).json({ message: 'Anda berada diluar jangkauan 30 meter' })
+            return res.status(400).json({ message: `Anda berada diluar jangkauan ${distance}` })
         }
     } catch (error) {
         res.status(500).json({ message: 'Terjadi kesalahan pada server.' });

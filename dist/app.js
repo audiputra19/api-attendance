@@ -12,7 +12,7 @@ const authRoutes_1 = __importDefault(require("./routes/authRoutes"));
 const forgotPassRoutes_1 = __importDefault(require("./routes/forgotPassRoutes"));
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)({
-    origin: 'https:/api.karixa.co.id',
+    origin: 'http://karixa.co.id',
 }));
 app.use(express_1.default.json());
 //end point untuk menjalankan absensi
