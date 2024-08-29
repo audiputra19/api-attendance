@@ -25,7 +25,7 @@ app.use('/auth', authRouter);
 app.use('/auth', forgotPassRouter);
 
 app.get('/', (req: Request, res: Response) => {
-    res.send("welcome to API Absensi");
+    res.send("welcome");
 })
 
 const port = process.env.PORT
