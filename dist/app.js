@@ -12,7 +12,7 @@ const authRoutes_1 = __importDefault(require("./routes/authRoutes"));
 const forgotPassRoutes_1 = __importDefault(require("./routes/forgotPassRoutes"));
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)({
-    origin: 'http://karixa.co.id',
+    origin: 'https://project-absensi.vercel.app',
 }));
 app.use(express_1.default.json());
 //end point untuk menjalankan absensi
@@ -22,7 +22,7 @@ app.use('/auth', authRoutes_1.default);
 //end point untuk menjalankan lupa password
 app.use('/auth', forgotPassRoutes_1.default);
 app.get('/', (req, res) => {
-    res.send("welcome");
+    res.send("welcome to API Absensi");
 });
 const port = process.env.PORT;
 app.listen(port, () => {

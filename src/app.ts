@@ -10,7 +10,7 @@ import path from 'path';
 const app = express();  
 
 app.use(cors({
-    origin: 'http://karixa.co.id',
+    origin: 'https://project-absensi.vercel.app',
 }));
 
 app.use(express.json());
@@ -25,7 +25,7 @@ app.use('/auth', authRouter);
 app.use('/auth', forgotPassRouter);
 
 app.get('/', (req: Request, res: Response) => {
-    res.send("welcome");
+    res.send("welcome to API Absensi");
 })
 
 const port = process.env.PORT
