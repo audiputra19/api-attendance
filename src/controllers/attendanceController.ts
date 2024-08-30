@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import connection from '../config/db'
 import { RowDataPacket } from "mysql2";
 import { Absen, DataReqAttendance, Employees, HariKerja, Lembur, Libur, Puasa } from "../interfaces/attendance";
-import moment from 'moment'
+import moment from 'moment-timezone';
 
 export const attendanceUser = async (req: Request, res: Response) => {
     const dataReqAttendance = req.body.dataReqAttendance as DataReqAttendance;
@@ -10,9 +10,9 @@ export const attendanceUser = async (req: Request, res: Response) => {
     try {
         // console.log(dataReqAttendance)
         
-        const year = moment().utc().year();
-        const date = moment().utc().format('YYYY-MM-DD');
-        const time = moment().utc().format('HH:mm:ss');
+        const year = moment().tz('Asia/Jakarta').year();
+        const date = moment().tz('Asia/Jakarta').format('YYYY-MM-DD');
+        const time = moment().tz('Asia/Jakarta').format('HH:mm:ss');
         const employee = dataReqAttendance.employee;
         const nik = employee.nik;
         let message = '';
