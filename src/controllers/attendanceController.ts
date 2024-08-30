@@ -41,7 +41,7 @@ export const attendanceUser = async (req: Request, res: Response) => {
         const batasAbsen = moment(masuk, 'HH:mm:ss').subtract(1, 'hours').format('HH:mm:ss');
         const batasToleransi = moment(masuk, 'HH:mm:ss').add(30, 'minutes').format('HH:mm:ss');
         const batasMasuk = moment(masuk, 'HH:mm:ss').add(1, 'hours').format('HH:mm:ss');
-        const batasIstMasuk = moment(istMasuk, 'HH:mm:ss').add(30, 'minutes').format('HH:mm:ss');
+        const batasIstMasuk = moment(istKeluar, 'HH:mm:ss').add(30, 'minutes').format('HH:mm:ss');
         const batasKeluar = moment(keluar, 'HH:mm:ss').add(1, 'hours').format('HH:mm:ss');
         //console.log(istMasuk)
         
