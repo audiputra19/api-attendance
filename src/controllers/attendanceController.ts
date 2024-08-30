@@ -118,6 +118,7 @@ export const attendanceUser = async (req: Request, res: Response) => {
             const telat = dtAbsen.tlt;
             const telatIst = dtAbsen.tlt_is;
             const alpa = dtAbsen.alpa;
+            console.log(istKeluar);
 
             if(time < istKeluar){
                 message = 'Belum waktunya istirahat';
