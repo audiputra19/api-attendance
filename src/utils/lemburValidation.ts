@@ -9,8 +9,8 @@ export const lemburValidation = async (req: Request, res: Response, next: NextFu
 
     try {
         const day = moment().day();
-        const date = moment().format('YYYY-MM-DD');
-        const time = moment().format('HH:mm:ss');
+        const date = moment().tz('Asia/Jakarta').format('YYYY-MM-DD');
+        const time = moment().tz('Asia/Jakarta').format('HH:mm:ss');
         const nik = employee.nik
 
         const [libur] = await connection.query<RowDataPacket[]>(
