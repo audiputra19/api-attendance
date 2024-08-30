@@ -9,9 +9,10 @@ export const attendanceUser = async (req: Request, res: Response) => {
 
     try {
         // console.log(dataReqAttendance)
-        const year = moment().year();
-        const date = moment().format('YYYY-MM-DD');
-        const time = moment().format('HH:mm:ss');
+        
+        const year = moment().utc().year();
+        const date = moment().utc().format('YYYY-MM-DD');
+        const time = moment().utc().format('HH:mm:ss');
         const employee = dataReqAttendance.employee;
         const nik = employee.nik;
         let message = '';
