@@ -1,5 +1,5 @@
 import express from 'express'
-import { ReportAttendance } from '../controllers/reportCOntroller';
+import { ReportAttendance } from '../controllers/reportController';
 
 const reportRouter = express.Router();
 

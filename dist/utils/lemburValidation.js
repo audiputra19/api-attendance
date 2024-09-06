@@ -10,8 +10,8 @@ const lemburValidation = async (req, res, next) => {
     const employee = req.body.employee;
     try {
         const day = (0, moment_1.default)().day();
-        const date = (0, moment_1.default)().format('YYYY-MM-DD');
-        const time = (0, moment_1.default)().format('HH:mm:ss');
+        const date = (0, moment_1.default)().tz('Asia/Jakarta').format('YYYY-MM-DD');
+        const time = (0, moment_1.default)().tz('Asia/Jakarta').format('HH:mm:ss');
         const nik = employee.nik;
         const [libur] = await db_1.default.query(`SELECT keterangan, halfd FROM libur WHERE tanggal = ?`, [date]);
         const checkLibur = libur;

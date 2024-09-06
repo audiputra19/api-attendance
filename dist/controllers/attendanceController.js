@@ -5,14 +5,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.attendanceUser = void 0;
 const db_1 = __importDefault(require("../config/db"));
-const moment_1 = __importDefault(require("moment"));
+const moment_timezone_1 = __importDefault(require("moment-timezone"));
 const attendanceUser = async (req, res) => {
     const dataReqAttendance = req.body.dataReqAttendance;
     try {
         // console.log(dataReqAttendance)
-        const year = (0, moment_1.default)().year();
-        const date = (0, moment_1.default)().format('YYYY-MM-DD');
-        const time = (0, moment_1.default)().format('HH:mm:ss');
+        const year = (0, moment_timezone_1.default)().tz('Asia/Jakarta').year();
+        const date = (0, moment_timezone_1.default)().tz('Asia/Jakarta').format('YYYY-MM-DD');
+        const time = (0, moment_timezone_1.default)().tz('Asia/Jakarta').format('HH:mm:ss');
         const employee = dataReqAttendance.employee;
         const nik = employee.nik;
         let message = '';
@@ -25,15 +25,15 @@ const attendanceUser = async (req, res) => {
             FROM ${jamKerja}
             WHERE hr_krj = ?`, [dataReqAttendance.hariKerja]);
         const dtHariKerja = qryHariKerja[0];
-        const masuk = (0, moment_1.default)(dtHariKerja.jam_msk, 'HH:mm:ss').add(1, 'minutes').format('HH:mm:ss');
+        const masuk = (0, moment_timezone_1.default)(dtHariKerja.jam_msk, 'HH:mm:ss').add(1, 'minutes').format('HH:mm:ss');
         const istKeluar = dtHariKerja.ist_klr;
         const istMasuk = dtHariKerja.ist_msk;
         const keluar = dtHariKerja.jam_klr;
-        const batasAbsen = (0, moment_1.default)(masuk, 'HH:mm:ss').subtract(1, 'hours').format('HH:mm:ss');
-        const batasToleransi = (0, moment_1.default)(masuk, 'HH:mm:ss').add(30, 'minutes').format('HH:mm:ss');
-        const batasMasuk = (0, moment_1.default)(masuk, 'HH:mm:ss').add(1, 'hours').format('HH:mm:ss');
-        const batasIstMasuk = (0, moment_1.default)(istMasuk, 'HH:mm:ss').add(30, 'minutes').format('HH:mm:ss');
-        const batasKeluar = (0, moment_1.default)(keluar, 'HH:mm:ss').add(1, 'hours').format('HH:mm:ss');
+        const batasAbsen = (0, moment_timezone_1.default)(masuk, 'HH:mm:ss').subtract(1, 'hours').format('HH:mm:ss');
+        const batasToleransi = (0, moment_timezone_1.default)(masuk, 'HH:mm:ss').add(30, 'minutes').format('HH:mm:ss');
+        const batasMasuk = (0, moment_timezone_1.default)(masuk, 'HH:mm:ss').add(1, 'hours').format('HH:mm:ss');
+        const batasIstMasuk = (0, moment_timezone_1.default)(istKeluar, 'HH:mm:ss').add(30, 'minutes').format('HH:mm:ss');
+        const batasKeluar = (0, moment_timezone_1.default)(keluar, 'HH:mm:ss').add(1, 'hours').format('HH:mm:ss');
         //console.log(istMasuk)
         const [absen] = await db_1.default.query(`SELECT jam_msk, jam_is_klr, jam_is_msk, jam_klr, tlt, tlt_is, alpa
 			FROM absen_harian 
@@ -70,7 +70,7 @@ const attendanceUser = async (req, res) => {
                     '0','0','0','0','0',
                     '0','0','0','0')`, [date, nik, time]);
                 if (time < batasToleransi) {
-                    const lateMinutes = (0, moment_1.default)(time, 'HH:mm:ss').diff((0, moment_1.default)(masuk, 'HH:mm:ss'), 'minutes');
+                    const lateMinutes = (0, moment_timezone_1.default)(time, 'HH:mm:ss').diff((0, moment_timezone_1.default)(masuk, 'HH:mm:ss'), 'minutes');
                     message = `Anda terlambat ${lateMinutes} menit`;
                 }
                 else {
@@ -102,6 +102,7 @@ const attendanceUser = async (req, res) => {
             const telat = dtAbsen.tlt;
             const telatIst = dtAbsen.tlt_is;
             const alpa = dtAbsen.alpa;
+            console.log(batasIstMasuk);
             if (time < istKeluar) {
                 message = 'Belum waktunya istirahat';
             }
@@ -211,9 +212,9 @@ const attendanceUser = async (req, res) => {
                 if (checkLembur.length > 0) {
                     const dtLembur = checkLembur[0];
                     const spl = dtLembur.no_spl;
-                    const dateTime1 = (0, moment_1.default)(`${date} ${keluar}`, 'YYYY-MM-DD HH:mm:ss');
-                    const dateTime2 = (0, moment_1.default)(`${date} ${time}`, 'YYYY-MM-DD HH:mm:ss');
-                    const interval = moment_1.default.duration(dateTime2.diff(dateTime1)).asMinutes();
+                    const dateTime1 = (0, moment_timezone_1.default)(`${date} ${keluar}`, 'YYYY-MM-DD HH:mm:ss');
+                    const dateTime2 = (0, moment_timezone_1.default)(`${date} ${time}`, 'YYYY-MM-DD HH:mm:ss');
+                    const interval = moment_timezone_1.default.duration(dateTime2.diff(dateTime1)).asMinutes();
                     const realOv = Math.round(interval / 60);
                     await db_1.default.query(`UPDATE absen_harian 
                         SET jam_klr = ? 
@@ -228,8 +229,8 @@ const attendanceUser = async (req, res) => {
                         await db_1.default.query(`UPDATE absen_harian 
                             SET jam_klr = ? 
                             WHERE nik = ? AND tanggal = ?`, [time, nik, date]);
-                        const kodeBln = (0, moment_1.default)(date, 'MM');
-                        const kodeThn = (0, moment_1.default)(date, 'YY');
+                        const kodeBln = (0, moment_timezone_1.default)(date, 'MM');
+                        const kodeThn = (0, moment_timezone_1.default)(date, 'YY');
                         const [lembur] = await db_1.default.query(`SELECT no_spl 
                             FROM lembur
                             WHERE MONTH(tanggal) = ? 
@@ -245,9 +246,9 @@ const attendanceUser = async (req, res) => {
                             str_nomor = 1;
                         }
                         str_nomor = str_nomor.toString().padStart(3, '0');
-                        const dateTime1 = (0, moment_1.default)(`${date} ${keluar}`, 'YYYY-MM-DD HH:mm:ss');
-                        const dateTime2 = (0, moment_1.default)(`${date} ${time}`, 'YYYY-MM-DD HH:mm:ss');
-                        const interval = moment_1.default.duration(dateTime2.diff(dateTime1)).asMinutes();
+                        const dateTime1 = (0, moment_timezone_1.default)(`${date} ${keluar}`, 'YYYY-MM-DD HH:mm:ss');
+                        const dateTime2 = (0, moment_timezone_1.default)(`${date} ${time}`, 'YYYY-MM-DD HH:mm:ss');
+                        const interval = moment_timezone_1.default.duration(dateTime2.diff(dateTime1)).asMinutes();
                         const ov = Math.round(interval);
                         const job = 'Absen lebih dari 1 jam dari jam pulang';
                         const nomor = `${str_nomor}/SKN-SPL/${kodeBln}/${kodeThn}`;
