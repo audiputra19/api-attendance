@@ -6,11 +6,13 @@ import cors from 'cors';
 import authRouter from './routes/authRoutes';
 import forgotPassRouter from './routes/forgotPassRoutes';
 import path from 'path';
+import reportRouter from './routes/reportRoutes';
 
 const app = express();  
 
 app.use(cors({
     origin: 'https://project-absensi.vercel.app',
+    // origin: 'http://localhost:3000',
 }));
 
 app.use(express.json());
@@ -23,6 +25,9 @@ app.use('/auth', authRouter);
 
 //end point untuk menjalankan lupa password
 app.use('/auth', forgotPassRouter);
+
+//end point untuk report
+app.use('/report', reportRouter);
 
 app.get('/', (req: Request, res: Response) => {
     res.send("welcome");

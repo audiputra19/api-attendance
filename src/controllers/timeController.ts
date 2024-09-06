@@ -41,6 +41,6 @@ export const TimeAttendance = async (req: Request, res: Response) => {
             }
         })
     } catch (error) {
-        res.status(500).json({ message: 'Error fetching time attendance' })
+        res.status(500).json({ message: 'Terjadi kesalahan pada server.' })
     }
 }
