@@ -37,7 +37,7 @@ export const distanceValidation = async (req: Request, res: Response, next: Next
             longitude
         )
         console.log(distance);
-        if(distance <= 30){
+        if(distance <= 5){
             next();
         } else {
             // return res.status(400).json({ message: 'Jarak anda lebih dari 30 meter' })

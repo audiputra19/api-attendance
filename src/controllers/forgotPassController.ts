@@ -17,6 +17,9 @@ const transporter = nodemailer.createTransport({
     }
 });
 
+const BASE_URL = "https://project-absensi.vercel.app";
+// const BASE_URL = "http://localhost:3000";
+
 export const forgotPass = async (req: Request, res: Response) => {
     const { email } = req.body;
 
@@ -40,7 +43,7 @@ export const forgotPass = async (req: Request, res: Response) => {
 
         const resetToken = generateTokenForgotPass(user.nik);
 
-        const resetUrl = `https://project-absensi.vercel.app/auth/reset-pass/${resetToken}`;
+        const resetUrl = `${BASE_URL}/auth/reset-pass/${resetToken}`;
         const mailOptions = {
             from: '"Admin IT" <curhatfilm19@gmail.com>',
             to: email,
