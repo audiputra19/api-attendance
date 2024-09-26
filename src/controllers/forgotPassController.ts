@@ -17,8 +17,8 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-// const BASE_URL = "https://project-absensi.vercel.app";
-const BASE_URL = "http://localhost:3000";
+const BASE_URL = "https://project-absensi.vercel.app";
+// const BASE_URL = "http://localhost:3000";
 
 export const forgotPass = async (req: Request, res: Response) => {
     const { email } = req.body;
