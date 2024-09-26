@@ -29,7 +29,7 @@ export const TimeAttendance = async (req: Request, res: Response) => {
         const telatIst = dtAbsen.tlt_is;
         const alpa = dtAbsen.alpa;
 
-        res.status(200).json({
+        return res.status(200).json({
             data: {
                 masuk: jamMasuk,
                 istKeluar: jamIstKeluar,
@@ -41,6 +41,6 @@ export const TimeAttendance = async (req: Request, res: Response) => {
             }
         })
     } catch (error) {
-        res.status(500).json({ message: 'Terjadi kesalahan pada server.' })
+        return res.status(500).json({ message: 'Terjadi kesalahan pada server.' })
     }
 }

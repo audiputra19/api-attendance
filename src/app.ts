@@ -7,6 +7,7 @@ import authRouter from './routes/authRoutes';
 import forgotPassRouter from './routes/forgotPassRoutes';
 import path from 'path';
 import reportRouter from './routes/reportRoutes';
+import profileRouter from './routes/profileRoutes';
 
 const app = express();  
 
@@ -28,6 +29,9 @@ app.use('/auth', forgotPassRouter);
 
 //end point untuk report
 app.use('/report', reportRouter);
+
+//end point untuk profile
+app.use('/', profileRouter);
 
 app.get('/', (req: Request, res: Response) => {
     res.send("welcome");
