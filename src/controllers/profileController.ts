@@ -19,6 +19,7 @@ export const ProfileAttendance = async (req: Request, res: Response) => {
                 JABATAN as jabatan,
                 PENDIDIKAN as pendidikan,
                 ST_MARITAL as status,
+                BAGIAN as divisi,
                 no_rek
             FROM dt_karyawan 
             WHERE ID_KAR = ?`, [nik]

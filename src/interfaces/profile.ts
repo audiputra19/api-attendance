@@ -10,5 +10,6 @@ export interface Profile {
     jabatan: string;
     pendidikan: string;
     status: string;
+    divisi: string;
     no_rek: string;
 }
