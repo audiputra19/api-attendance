@@ -8,7 +8,7 @@ export const ReportAttendance = async (req: Request, res: Response) => {
     const {startDate, endDate, nik} = req.body;
     const start = moment(startDate).tz('Asia/Jakarta').format('YYYY-MM-DD');
     const end = moment(endDate).tz('Asia/Jakarta').format('YYYY-MM-DD');
-    console.log(`${start}, ${end}, ${nik}`);
+    //console.log(`${start}, ${end}, ${nik}`);
     
     try {
         const [data] = await connection.query<RowDataPacket[]>(
