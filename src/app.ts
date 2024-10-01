@@ -1,13 +1,14 @@
-import cors from 'cors';
 import dotenv from 'dotenv';
-import express, { Request, Response } from 'express';
+dotenv.config();
+import express, { Request, Response } from 'express'
 import attendanceRoutes from './routes/attendanceRoutes';
+import cors from 'cors';
 import authRouter from './routes/authRoutes';
 import forgotPassRouter from './routes/forgotPassRoutes';
-import leaveRouter from './routes/leaveRoutes';
-import profileRouter from './routes/profileRoutes';
+import path from 'path';
 import reportRouter from './routes/reportRoutes';
-dotenv.config();
+import profileRouter from './routes/profileRoutes';
+import leaveRouter from './routes/leaveRoutes';
 
 const app = express();  
 
