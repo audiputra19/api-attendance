@@ -1,13 +1,13 @@
-import dotenv from 'dotenv';
-dotenv.config();
-import express, { Request, Response } from 'express'
-import attendanceRoutes from './routes/attendanceRoutes';
 import cors from 'cors';
+import dotenv from 'dotenv';
+import express, { Request, Response } from 'express';
+import attendanceRoutes from './routes/attendanceRoutes';
 import authRouter from './routes/authRoutes';
 import forgotPassRouter from './routes/forgotPassRoutes';
-import path from 'path';
-import reportRouter from './routes/reportRoutes';
+import leaveRouter from './routes/leaveRoutes';
 import profileRouter from './routes/profileRoutes';
+import reportRouter from './routes/reportRoutes';
+dotenv.config();
 
 const app = express();  
 
@@ -32,6 +32,9 @@ app.use('/report', reportRouter);
 
 //end point untuk profile
 app.use('/', profileRouter);
+
+//end point untuk leave
+app.use('/', leaveRouter);
 
 app.get('/', (req: Request, res: Response) => {
     res.send("welcome");
