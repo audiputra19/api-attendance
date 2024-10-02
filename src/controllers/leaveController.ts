@@ -2,14 +2,17 @@ import { Request, Response } from "express";
 import connection from "../config/db";
 import { RowDataPacket } from "mysql2";
 import moment from "moment-timezone";
-import { Leave } from "../interfaces/leave";
+import { Leave, LeaveReport } from "../interfaces/leave";
+
+const year = moment().tz('Asia/Jakarta').year();
+const lastYear = moment().tz('Asia/Jakarta').subtract(1, 'year').year();
+const date = moment().tz('Asia/Jakarta').format('YYYY-MM-DD');
+const firstDateInYear = moment().tz('Asia/Jakarta').set({ 'month': 1, 'date': 1 }).format('YYYY-MM-DD');
+const leaveDate = moment().tz('Asia/Jakarta').set({ 'month': 2, 'date': 1 }).format('YYYY-MM-DD');
+const lastLeaveDate = moment().tz('Asia/Jakarta').subtract(1, 'year').set({ 'month': 2, 'date': 1 }).format('YYYY-MM-DD');
 
 export const LeaveAttendance = async (req: Request, res: Response) => {
     const { nik } = req.body;
-    const lastYear = moment().tz('Asia/Jakarta').subtract(1, 'year').year();
-    const date = moment().tz('Asia/Jakarta').format('YYYY-MM-DD');
-    const leaveDate = moment().tz('Asia/Jakarta').set({ 'month': 2, 'date': 1 }).format('YYYY-MM-DD');
-    const lastLeaveDate = moment().tz('Asia/Jakarta').subtract(1, 'year').set({ 'month': 2, 'date': 1 }).format('YYYY-MM-DD');
 
     try {
         const [rowLeave] = await connection.query<RowDataPacket[]>(
@@ -29,7 +32,7 @@ export const LeaveAttendance = async (req: Request, res: Response) => {
             WHERE DATE(tanggal) BETWEEN ? AND ?
             AND nik = ?
             AND cuti = '1'
-            ORDER BY tanggal`, [lastLeaveDate, leaveDate, nik]
+            ORDER BY tanggal`, [lastLeaveDate, firstDateInYear, nik]
         );
 
         const checkLastLeave = rowCheckLastLeave[0] as Leave;
@@ -37,7 +40,7 @@ export const LeaveAttendance = async (req: Request, res: Response) => {
 
         let lastLeave = leaveNow - lastLeaveCuti;
 
-        if (lastLeave < 0) {
+        if (lastLeave < 0 || date > leaveDate) {
             lastLeave = 0;
         }
 
@@ -47,7 +50,7 @@ export const LeaveAttendance = async (req: Request, res: Response) => {
             WHERE DATE(tanggal) BETWEEN ? AND ?
             AND nik = ?
             AND cuti = '1'
-            ORDER BY tanggal`, [leaveDate, date, nik]
+            ORDER BY tanggal`, [firstDateInYear, date, nik]
         )
 
         const checkLeaveNow = rowCheckLeaveNow[0] as Leave;
@@ -65,6 +68,35 @@ export const LeaveAttendance = async (req: Request, res: Response) => {
         });
         
     } catch (error) {
-        return res.status(500).json({ message: 'Terjadi kesalahan pada server' })
+        return res.status(500).json({ message: 'Terjadi kesalahan pada server' });
+    }
+}
+
+export const ReportLeave = async (req: Request, res: Response) => {
+    const { nik } = req.body;
+
+    try {
+
+        const [rowReportLeave] = await connection.query<RowDataPacket[]>(
+            `SELECT tanggal, keterangan 
+            FROM absen_harian
+            WHERE (YEAR(tanggal) = ? OR YEAR(tanggal) = ?)
+            AND nik = ?
+            AND cuti = '1'
+            ORDER BY tanggal`, [lastYear,year, nik]
+        );
+
+        const reportWithSisa = rowReportLeave.map((leaveEntry: any) => {
+
+            return {
+                ...leaveEntry
+            };
+        });  
+
+        return res.status(200).json({ data: reportWithSisa });
+
+    } catch (error) {
+        console.error("Error in ReportLeave:", error);
+      
     }
 }
