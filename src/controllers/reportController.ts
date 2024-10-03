@@ -35,3 +35,32 @@ export const ReportAttendance = async (req: Request, res: Response) => {
         return res.status(500).json({ message: 'Terjadi kesalahan pada server.' });
     }
 }
+
+export const ReportList = async (req: Request, res: Response) => {
+    const {startDate, endDate, nik} = req.body;
+    const start = moment(startDate).tz('Asia/Jakarta').format('YYYY-MM-DD');
+    const end = moment(endDate).tz('Asia/Jakarta').format('YYYY-MM-DD');
+    console.log(`${start}, ${end}, ${nik}`)
+
+    try {
+        
+        const [rowReportList] = await connection.query<RowDataPacket[]>(
+            `SELECT tanggal, hadir, alpa, tlt as telat, ijin as izin, cuti
+            FROM absen_harian 
+            WHERE DATE(tanggal) BETWEEN ? AND ? 
+            AND nik = ? 
+            ORDER BY tanggal`, [start, end, nik]
+        );
+
+        const reportList = rowReportList.map((reportEntry: any) => {
+            return {
+                ...reportEntry
+            }
+        });
+
+        return res.status(200).json(reportList);
+
+    } catch (error) {
+        return res.status(500).json({ message: 'Terjadi kesalahan pada server.' });
+    }
+}

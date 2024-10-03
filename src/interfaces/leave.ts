@@ -5,6 +5,4 @@ export interface Leave {
 export interface LeaveReport {
     tanggal: string;
     keterangan: string;
-    cuti: number;
-    sisa: number;
 }
