@@ -89,10 +89,12 @@ export const resetPass = async (req: Request, res: Response) => {
         const salt = await bcrypt.genSalt(10);
         const hashedPass = await bcrypt.hash(newPassword, salt);
 
-        await connection.query('UPDATE user_auth SET pass = ? WHERE reset_token = ?', [hashedPass, token])
+        const [result] = await connection.query('UPDATE user_auth SET pass = ? WHERE reset_token = ?', [hashedPass, token])
+        console.log('Update Result:', result);
 
         res.status(200).json({ message: 'Password berhasil diganti' });
     } catch (error) {
+        console.error('Error resetting password:', error);
         res.status(400).json({ message: 'Token tidak valid atau telah kedaluwarsa' });
     }
 } 
