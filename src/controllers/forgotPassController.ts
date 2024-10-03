@@ -71,30 +71,38 @@ export const resetPass = async (req: Request, res: Response) => {
     const { token, newPassword, confirmPassword } = req.body;
 
     try {
-        if(newPassword.length === 0 || confirmPassword.length === 0){
-            return res.status(404).json({ message: 'Form harus diisi' })
+        if (newPassword.length === 0 || confirmPassword.length === 0) {
+            return res.status(400).json({ message: 'Form harus diisi' });
         }
 
         const passwordRegex = /^.{6,}$/;
         if (!passwordRegex.test(newPassword)) {
-            return res.status(404).json({ message: 'Password minimal 6 karakter' });
+            return res.status(400).json({ message: 'Password minimal 6 karakter' });
         }
 
-        if(newPassword !== confirmPassword){
-            return res.status(404).json({ message: 'Isi konfirmasi password dengan benar' })
+        if (newPassword !== confirmPassword) {
+            return res.status(400).json({ message: 'Isi konfirmasi password dengan benar' });
         }
 
-        jwt.verify(token, JWT_SECRET as string);
+        // Verifikasi token
+        let decoded;
+        try {
+            decoded = jwt.verify(token, JWT_SECRET as string);
+        } catch (err) {
+            console.error('Error verifying token:', err);
+            return res.status(400).json({ message: 'Token tidak valid atau telah kedaluwarsa' });
+        }
 
         const salt = await bcrypt.genSalt(10);
         const hashedPass = await bcrypt.hash(newPassword, salt);
 
-        const [result] = await connection.query('UPDATE user_auth SET pass = ? WHERE reset_token = ?', [hashedPass, token])
+        // Cek hasil dari update password
+        const [result] = await connection.query('UPDATE user_auth SET pass = ? WHERE reset_token = ?', [hashedPass, token]);
         console.log('Update Result:', result);
 
         res.status(200).json({ message: 'Password berhasil diganti' });
     } catch (error) {
         console.error('Error resetting password:', error);
-        res.status(400).json({ message: 'Token tidak valid atau telah kedaluwarsa' });
+        res.status(500).json({ message: 'Terjadi kesalahan pada server', error });
     }
-} 
+}
