@@ -71,6 +71,7 @@ export const resetPass = async (req: Request, res: Response) => {
     const { token, newPassword, confirmPassword } = req.body;
 
     try {
+        // Validasi input
         if (newPassword.length === 0 || confirmPassword.length === 0) {
             return res.status(400).json({ message: 'Form harus diisi' });
         }
@@ -84,10 +85,13 @@ export const resetPass = async (req: Request, res: Response) => {
             return res.status(400).json({ message: 'Isi konfirmasi password dengan benar' });
         }
 
+        const trimmedToken = token.trim();
+        console.log('Trimmed Token:', trimmedToken);
+
         // Verifikasi token
         let decoded;
         try {
-            decoded = jwt.verify(token, JWT_SECRET as string);
+            decoded = jwt.verify(trimmedToken, JWT_SECRET as string);
         } catch (err) {
             console.error('Error verifying token:', err);
             return res.status(400).json({ message: 'Token tidak valid atau telah kedaluwarsa' });
@@ -95,9 +99,14 @@ export const resetPass = async (req: Request, res: Response) => {
 
         const salt = await bcrypt.genSalt(10);
         const hashedPass = await bcrypt.hash(newPassword, salt);
+        console.log('Hashed Password:', hashedPass);
 
-        // Cek hasil dari update password
-        const [result] = await connection.query('UPDATE user_auth SET pass = ? WHERE reset_token = ?', [hashedPass, token]);
+        // Cek nilai reset_token di database
+        const [userRows] = await connection.query('SELECT * FROM user_auth WHERE reset_token = ?', [trimmedToken]);
+        console.log('User Rows:', userRows);
+
+        // Update password
+        const [result] = await connection.query('UPDATE user_auth SET pass = ? WHERE reset_token = ?', [hashedPass, trimmedToken]);
         console.log('Update Result:', result);
 
         res.status(200).json({ message: 'Password berhasil diganti' });
@@ -106,3 +115,4 @@ export const resetPass = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Terjadi kesalahan pada server', error });
     }
 }
+ 
