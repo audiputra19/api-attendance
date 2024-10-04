@@ -14,7 +14,9 @@ const transporter = nodemailer.createTransport({
     auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
-    }
+    },
+    logger: true,
+    debug: true
 });
 
 const BASE_URL = "https://project-absensi.vercel.app";
@@ -33,17 +35,15 @@ export const forgotPass = async (req: Request, res: Response) => {
             INNER JOIN dt_karyawan ON dt_karyawan.ID_KAR = user_auth.nik
             WHERE user_auth.email = ?`, [email]
         );
-        
 
         if(rows.length === 0){
             return res.status(404).json({ message: 'Email belum terdaftar' });
         }
 
         const user = rows[0] as ForgotPass;
-
         const resetToken = generateTokenForgotPass(user.nik);
-
         const resetUrl = `${BASE_URL}/auth/reset-pass/${resetToken}`;
+
         const mailOptions = {
             from: '"Admin IT" <curhatfilm19@gmail.com>',
             to: email,
@@ -51,13 +51,21 @@ export const forgotPass = async (req: Request, res: Response) => {
             text: `Halo ${user.nama},\n\nKlik tautan berikut untuk mengatur ulang password Anda: ${resetUrl}\nJangan bagikan link ini kesiapapun, tautan ini akan kedaluwarsa dalam 1 jam.`,
         };  
         
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.log('Error:', error);
-                return;
-            }
-            console.log('Email sent:', info.response);
-        });
+        // transporter.sendMail(mailOptions, (error, info) => {
+        //     if (error) {
+        //         console.log('Error:', error);
+        //         return;
+        //     }
+        //     console.log('Email sent:', info.response);
+        // });
+
+        try {
+            await transporter.sendMail(mailOptions);
+            console.log('Email sent successfully');
+        } catch (error) {
+            console.error('Error while sending email:', error);
+            return res.status(500).json({ message: 'Gagal mengirim email' });
+        }
 
         await connection.query('UPDATE user_auth SET reset_token = ? WHERE email = ?', [resetToken, email]);
 
@@ -71,48 +79,28 @@ export const resetPass = async (req: Request, res: Response) => {
     const { token, newPassword, confirmPassword } = req.body;
 
     try {
-        // Validasi input
-        if (newPassword.length === 0 || confirmPassword.length === 0) {
-            return res.status(400).json({ message: 'Form harus diisi' });
+        if(newPassword.length === 0 || confirmPassword.length === 0){
+            return res.status(404).json({ message: 'Form harus diisi' })
         }
 
         const passwordRegex = /^.{6,}$/;
         if (!passwordRegex.test(newPassword)) {
-            return res.status(400).json({ message: 'Password minimal 6 karakter' });
+            return res.status(404).json({ message: 'Password minimal 6 karakter' });
         }
 
-        if (newPassword !== confirmPassword) {
-            return res.status(400).json({ message: 'Isi konfirmasi password dengan benar' });
+        if(newPassword !== confirmPassword){
+            return res.status(404).json({ message: 'Isi konfirmasi password dengan benar' })
         }
 
-        const trimmedToken = token.trim();
-        console.log('Trimmed Token:', trimmedToken);
-
-        // Verifikasi token
-        let decoded;
-        try {
-            decoded = jwt.verify(trimmedToken, JWT_SECRET as string);
-        } catch (err) {
-            console.error('Error verifying token:', err);
-            return res.status(400).json({ message: 'Token tidak valid atau telah kedaluwarsa' });
-        }
-
+        jwt.verify(token, JWT_SECRET as string);
+        
         const salt = await bcrypt.genSalt(10);
         const hashedPass = await bcrypt.hash(newPassword, salt);
-        console.log('Hashed Password:', hashedPass);
 
-        // Cek nilai reset_token di database
-        const [userRows] = await connection.query('SELECT * FROM user_auth WHERE reset_token = ?', [trimmedToken]);
-        console.log('User Rows:', userRows);
-
-        // Update password
-        const [result] = await connection.query('UPDATE user_auth SET pass = ? WHERE reset_token = ?', [hashedPass, trimmedToken]);
+        const [result] = await connection.query('UPDATE user_auth SET pass = ? WHERE reset_token = ?', [hashedPass, token])
         console.log('Update Result:', result);
-
         res.status(200).json({ message: 'Password berhasil diganti' });
     } catch (error) {
-        console.error('Error resetting password:', error);
-        res.status(500).json({ message: 'Terjadi kesalahan pada server', error });
+        res.status(400).json({ message: 'Token tidak valid atau telah kedaluwarsa' });
     }
-}
- 
+} 
