@@ -16,7 +16,11 @@ const transporter = nodemailer.createTransport({
         pass: process.env.EMAIL_PASS
     },
     logger: true,
-    debug: true
+    debug: true,
+    pool: true,    // Menjaga koneksi tetap terbuka
+    maxConnections: 1,
+    maxMessages: 3,
+    rateLimit: 1,
 });
 
 const BASE_URL = "https://project-absensi.vercel.app";
