@@ -15,8 +15,8 @@ const transporter = nodemailer.createTransport({
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
     },
-    logger: true,
-    debug: true,
+    // logger: true,
+    // debug: true,
     pool: true,    // Menjaga koneksi tetap terbuka
     maxConnections: 1,
     maxMessages: 3,
