@@ -78,7 +78,7 @@ export const registerUser = async (req: Request, res: Response) => {
         const salt = await bcrypt.genSalt(10);
         const hashedPass = await bcrypt.hash(password, salt);
 
-        await connection.query('INSERT INTO user_temporary (nik, pass, email) VALUES (?, ?, ?, ?)', [nik, hashedPass, email]);
+        await connection.query('INSERT INTO user_temporary (nik, pass, email) VALUES (?, ?, ?)', [nik, hashedPass, email]);
         
         // await connection.query('INSERT INTO user_auth (nik, pass, email) VALUE (?, ?, ?)', [nik, hashedPass, email]);
 
