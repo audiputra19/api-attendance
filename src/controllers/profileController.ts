@@ -41,6 +41,6 @@ export const ProfileAttendance = async (req: Request, res: Response) => {
         });
         
     } catch (error) {
-        return res.status(500).json({ message: 'Terjadi kesalahan pada server.' })
+        return res.status(500).json({ message: 'Terjadi kesalahan pada server' })
     }
 }

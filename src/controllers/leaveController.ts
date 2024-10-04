@@ -97,6 +97,6 @@ export const ReportLeave = async (req: Request, res: Response) => {
 
     } catch (error) {
         console.error("Error in ReportLeave:", error);
-      
+        return res.status(500).json({ message: 'Terjadi kesalahan pada server' });
     }
 }

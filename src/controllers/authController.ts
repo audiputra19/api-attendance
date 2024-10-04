@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import connection from "../config/db";
 import { RowDataPacket } from "mysql2";
 import { User } from "../interfaces/user";
@@ -26,7 +26,7 @@ const transporter = nodemailer.createTransport({
 const BASE_URL = "https://project-absensi.vercel.app";
 // const BASE_URL = "http://localhost:3000";
 
-export const registerUser = async (req: Request, res: Response) => {
+export const registerUser = async (req: Request, res: Response, next: NextFunction) => {
     const {nik, email, password, confirmPassword} = req.body;
 
     try {
@@ -78,13 +78,14 @@ export const registerUser = async (req: Request, res: Response) => {
         const salt = await bcrypt.genSalt(10);
         const hashedPass = await bcrypt.hash(password, salt);
 
-        await connection.query('INSERT INTO user_temporary (nik, pass, email) VALUES (?, ?, ?)', [nik, hashedPass, email]);
+        await connection.query('INSERT INTO user_temporary (nik, pass, email, token) VALUES (?, ?, ?, ?)', [nik, hashedPass, email, verifyToken]);
         
         // await connection.query('INSERT INTO user_auth (nik, pass, email) VALUE (?, ?, ?)', [nik, hashedPass, email]);
-
+        req.body.token = verifyToken;
+        next();
         return res.status(200).json({ message: 'Cek email untuk verifikasi akun' })
     } catch (error) {
-        return res.status(500).json({ message: 'Terjadi kesalahan pada server', error });
+        return res.status(500).json({ message: 'Terjadi kesalahan pada server' });
     }
 }
 
@@ -127,6 +128,6 @@ export const loginUser = async (req: Request, res: Response) => {
             return res.status(401).json({ message: 'NIK atau password salah!' });
         }
     } catch (error) {
-        return res.status(500).json({ message: 'Terjadi kesalahan pada server', error });
+        return res.status(500).json({ message: 'Terjadi kesalahan pada server'});
     }
 }
