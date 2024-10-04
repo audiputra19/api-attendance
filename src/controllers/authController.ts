@@ -70,15 +70,15 @@ export const registerUser = async (req: Request, res: Response) => {
         try {
             await transporter.sendMail(mailOptions);
             console.log('Email sent successfully');
+
+            await connection.query('INSERT INTO user_temporary (nik, pass, email, token) VALUES (?, ?, ?, ?)', [nik, password, email, verifyToken]);
+
+            return res.status(200).json({ message: 'Cek email untuk verifikasi akun' })
         } catch (error) {
             console.error('Error while sending email:', error);
             return res.status(500).json({ message: 'Gagal mengirim email' });
         }
-
-        await connection.query('INSERT INTO user_temporary (nik, pass, email, token) VALUES (?, ?, ?, ?)', [nik, password, email, verifyToken]);
-        
-        // await connection.query('INSERT INTO user_auth (nik, pass, email) VALUE (?, ?, ?)', [nik, hashedPass, email]);
-        return res.status(200).json({ message: 'Cek email untuk verifikasi akun' })
+ 
     } catch (error) {
         return res.status(500).json({ message: 'Terjadi kesalahan pada server' });
     }
