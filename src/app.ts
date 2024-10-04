@@ -13,8 +13,8 @@ import leaveRouter from './routes/leaveRoutes';
 const app = express();  
 
 app.use(cors({
-    origin: 'https://project-absensi.vercel.app',
-    // origin: 'http://localhost:3000',
+    // origin: 'https://project-absensi.vercel.app',
+    origin: 'http://localhost:3000',
 }));
 
 app.use(express.json());
