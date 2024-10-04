@@ -36,12 +36,14 @@ export const distanceValidation = async (req: Request, res: Response, next: Next
             latitude,
             longitude
         )
-        console.log(distance);
+        
+        const sayDistance = Math.round(distance);
+
         if(distance <= 5){
             next();
         } else {
             // return res.status(400).json({ message: 'Jarak anda lebih dari 30 meter' })
-            return res.status(400).json({ message: `Jarak anda ${distance}` })
+            return res.status(400).json({ message: `Jarak anda ${sayDistance} meter` })
         }
     } catch (error) {
         res.status(500).json({ message: 'Terjadi kesalahan pada server.' });
