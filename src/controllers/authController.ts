@@ -75,10 +75,7 @@ export const registerUser = async (req: Request, res: Response) => {
             return res.status(500).json({ message: 'Gagal mengirim email' });
         }
 
-        const salt = await bcrypt.genSalt(10);
-        const hashedPass = await bcrypt.hash(password, salt);
-
-        await connection.query('INSERT INTO user_temporary (nik, pass, email, token) VALUES (?, ?, ?, ?)', [nik, hashedPass, email, verifyToken]);
+        await connection.query('INSERT INTO user_temporary (nik, pass, email, token) VALUES (?, ?, ?, ?)', [nik, password, email, verifyToken]);
         
         // await connection.query('INSERT INTO user_auth (nik, pass, email) VALUE (?, ?, ?)', [nik, hashedPass, email]);
         return res.status(200).json({ message: 'Cek email untuk verifikasi akun' })
