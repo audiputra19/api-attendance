@@ -9,6 +9,7 @@ import path from 'path';
 import reportRouter from './routes/reportRoutes';
 import profileRouter from './routes/profileRoutes';
 import leaveRouter from './routes/leaveRoutes';
+import verficationRouter from './routes/verificationRoutes';
 
 const app = express();  
 
@@ -36,6 +37,9 @@ app.use('/', profileRouter);
 
 //end point untuk leave
 app.use('/', leaveRouter);
+
+//end point untuk verification
+app.use('/auth', verficationRouter);
 
 app.get('/', (req: Request, res: Response) => {
     res.send("welcome");
