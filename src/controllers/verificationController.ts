@@ -24,6 +24,7 @@ export const verficationRegistration = async (req: Request, res: Response) => {
         return res.status(200).json({ message: 'Registrasi berhasil, silakan login' });
 
     } catch (error) {
+        console.error('Verification Error:', error);
         return res.status(500).json({ message: 'Token tidak valid atau sudah kedaluwarsa' });
     }
 }
