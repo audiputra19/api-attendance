@@ -11,7 +11,7 @@ export const verficationRegistration = async (req: Request, res: Response) => {
         const secret = process.env.JWT_SECRET!;
         const decoded = jwt.verify(token, secret);
 
-        const [rows] = await connection.query<RowDataPacket[]>('SELECT * FROM temporary_users WHERE token = ?', [token]);
+        const [rows] = await connection.query<RowDataPacket[]>('SELECT * FROM user_temporary WHERE token = ?', [token]);
         const tempUser = rows[0] as TemporaryUser;
 
         if (!tempUser) {
