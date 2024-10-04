@@ -63,7 +63,7 @@ export const registerUser = async (req: Request, res: Response) => {
         const mailOptions = {
             from: '"Admin IT" <curhatfilm19@gmail.com>',
             to: email,
-            subject: 'Verifikasi akun Anda',
+            subject: 'Verifikasi Akun Anda',
             text: `Klik tautan berikut untuk melakukan verifikasi akun: ${verifyUrl}\ntautan ini akan kedaluwarsa dalam 1 jam.`,
         };  
 
@@ -75,8 +75,10 @@ export const registerUser = async (req: Request, res: Response) => {
             return res.status(500).json({ message: 'Gagal mengirim email' });
         }
 
-        // const salt = await bcrypt.genSalt(10);
-        // const hashedPass = await bcrypt.hash(password, salt);
+        const salt = await bcrypt.genSalt(10);
+        const hashedPass = await bcrypt.hash(password, salt);
+
+        await connection.query('INSERT INTO user_temporary (nik, email, pass) VALUES (?, ?, ?, ?)', [nik, email, hashedPass]);
         
         // await connection.query('INSERT INTO user_auth (nik, pass, email) VALUE (?, ?, ?)', [nik, hashedPass, email]);
 
