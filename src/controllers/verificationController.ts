@@ -12,11 +12,12 @@ export const verficationRegistration = async (req: Request, res: Response) => {
         const decoded = jwt.verify(token, secret);
 
         const [rows] = await connection.query<RowDataPacket[]>('SELECT * FROM user_temporary WHERE token = ?', [token]);
-        const tempUser = rows[0] as TemporaryUser;
 
-        if (!tempUser) {
+        if (rows.length === 0) {
             return res.status(404).json({ message: 'Token tidak valid atau sudah kedaluwarsa' });
         }
+
+        const tempUser = rows[0] as TemporaryUser;
 
         await connection.query('INSERT INTO user_auth (nik, email, pass) VALUES (?, ?, ?)', [tempUser.nik, tempUser.email, tempUser.pass]);
         await connection.query('DELETE FROM user_temporary WHERE token = ?', [token]);
@@ -25,6 +26,8 @@ export const verficationRegistration = async (req: Request, res: Response) => {
 
     } catch (error) {
         console.error('Verification Error:', error);
-        return res.status(500).json({ message: 'Token tidak valid atau sudah kedaluwarsa' });
+        if (!res.headersSent) {
+            return res.status(500).json({ message: 'Token tidak valid atau sudah kedaluwarsa' });
+        }
     }
 }
