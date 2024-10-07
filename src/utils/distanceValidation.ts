@@ -36,6 +36,7 @@ export const distanceValidation = async (req: Request, res: Response, next: Next
 
         // Ambil hanya IP pertama jika ada beberapa IP di X-Forwarded-For
         const clientIp = ip.split(',')[0];
+        console.log(clientIp)
 
         // Panggil API geolokasi berdasarkan IP pengguna
         const response = await axios.get(`https://ipapi.co/${clientIp}/json/`);
