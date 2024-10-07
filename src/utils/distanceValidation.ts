@@ -26,6 +26,7 @@ export const distanceValidation = async (req: Request, res: Response, next: Next
     const {latitude, longitude} = req.body;
     const officeLocation = { latitude: -6.915196237927959, longitude: 106.8742431897525 };
     const userIp = req.ip;
+    console.log(userIp)
 
     try {
         if(!latitude || !longitude){
