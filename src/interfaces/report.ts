@@ -4,4 +4,5 @@ export interface Report {
     telat: number;
     izin: number;
     cuti: number;
+    keterangan: string;
 }

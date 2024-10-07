@@ -45,7 +45,7 @@ export const ReportList = async (req: Request, res: Response) => {
     try {
         
         const [rowReportList] = await connection.query<RowDataPacket[]>(
-            `SELECT tanggal, hadir, alpa, tlt as telat, ijin as izin, cuti
+            `SELECT tanggal, hadir, alpa, tlt as telat, ijin as izin, cuti, keterangan
             FROM absen_harian 
             WHERE DATE(tanggal) BETWEEN ? AND ? 
             AND nik = ? 
