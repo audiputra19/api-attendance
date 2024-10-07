@@ -35,8 +35,8 @@ export const distanceValidation = async (req: Request, res: Response, next: Next
         const ip = req.headers['x-forwarded-for'] as string || req.socket.remoteAddress || '127.0.0.1';
 
         // Ambil hanya IP pertama jika ada beberapa IP di X-Forwarded-For
-        const clientIp = ip.split(',')[0];
-        console.log(clientIp)
+        const clientIp = ip.split(',')[0].trim();
+        console.log("ip client:", clientIp)
 
         // Panggil API geolokasi berdasarkan IP pengguna
         const response = await axios.get(`https://ipapi.co/${clientIp}/json/`);
@@ -50,6 +50,8 @@ export const distanceValidation = async (req: Request, res: Response, next: Next
         // Hitung jarak antara lokasi IP dan koordinat absensi
         const ipDistance = calculateDistance(ipLat, ipLon, latitude, longitude);
         const sayIpDistance = Math.round(ipDistance);
+
+        console.log("ip distance:", ipDistance)
 
         // Jika jarak antara IP dan lokasi absensi terlalu jauh
         if (ipDistance > 10000) { // Misalnya 10 km dianggap mencurigakan
