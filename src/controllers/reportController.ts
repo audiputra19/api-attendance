@@ -12,7 +12,7 @@ export const ReportAttendance = async (req: Request, res: Response) => {
     
     try {
         const [data] = await connection.query<RowDataPacket[]>(
-            `SELECT SUM(hadir) as hadir, SUM(alpa) as alpa, SUM(tlt) as telat, SUM(ijin) as izin, SUM(cuti) as cuti
+            `SELECT SUM(hadir) as hadir, SUM(alpa) as alpa, SUM(tlt) as telat, SUM(sakit) as sakit, SUM(ijin) as izin, SUM(cuti) as cuti
             FROM absen_harian 
             WHERE DATE(tanggal) BETWEEN ? AND ? 
             AND nik = ? 
