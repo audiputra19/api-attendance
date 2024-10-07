@@ -1,3 +1,4 @@
+import axios from "axios";
 import { error } from "console";
 import { NextFunction, Request, Response } from "express";
 
@@ -24,6 +25,7 @@ const calculateDistance = (
 export const distanceValidation = async (req: Request, res: Response, next: NextFunction) => {
     const {latitude, longitude} = req.body;
     const officeLocation = { latitude: -6.915196237927959, longitude: 106.8742431897525 };
+    const userIp = req.ip;
 
     try {
         if(!latitude || !longitude){
@@ -39,12 +41,23 @@ export const distanceValidation = async (req: Request, res: Response, next: Next
         
         const sayDistance = Math.round(distance);
 
-        if(distance <= 5){
-            next();
-        } else {
-            // return res.status(400).json({ message: 'Jarak anda lebih dari 30 meter' })
+        if(distance > 5){
             return res.status(400).json({ message: `Jarak anda ${sayDistance} meter` })
+        } 
+
+        // Cek lokasi berdasarkan IP
+        const response = await axios.get(`https://ipapi.co/${userIp}/json/`);
+        const { latitude: ipLat, longitude: ipLon } = response.data;
+
+        // Hitung jarak antara lokasi IP dan lokasi GPS pengguna
+        const ipDistance = calculateDistance(ipLat, ipLon, latitude, longitude);
+
+        // Jika jarak dari IP ke GPS terlalu jauh (misalnya lebih dari 10 km), anggap Fake GPS
+        if (ipDistance > 15) {
+            return res.status(400).json({ message: `Deteksi lokasi mencurigakan` });
         }
+
+        next();
     } catch (error) {
         res.status(500).json({ message: 'Terjadi kesalahan pada server.' });
     }
