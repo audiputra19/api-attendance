@@ -1,4 +1,3 @@
-import axios from "axios";
 import { error } from "console";
 import { NextFunction, Request, Response } from "express";
 
@@ -31,33 +30,6 @@ export const distanceValidation = async (req: Request, res: Response, next: Next
             return res.status(400).json({ message: 'Koordinat salah!' })
         }
 
-        // Dapatkan IP asli dari header X-Forwarded-For
-        const ip = req.headers['x-forwarded-for'] as string || req.socket.remoteAddress || '127.0.0.1';
-
-        // Ambil hanya IP pertama jika ada beberapa IP di X-Forwarded-For
-        const clientIp = ip.split(',')[0].trim();
-        console.log("ip client:", clientIp)
-
-        // Panggil API geolokasi berdasarkan IP pengguna
-        const response = await axios.get(`https://ipapi.co/${clientIp}/json/`);
-        const { latitude: ipLat, longitude: ipLon } = response.data;
-
-        // Jika lokasi IP tidak ditemukan
-        if (!ipLat || !ipLon) {
-            return res.status(400).json({ message: 'Gagal mendapatkan lokasi dari IP.' });
-        }
-
-        // Hitung jarak antara lokasi IP dan koordinat absensi
-        const ipDistance = calculateDistance(ipLat, ipLon, latitude, longitude);
-        const sayIpDistance = Math.round(ipDistance);
-
-        console.log("ip distance:", ipDistance)
-
-        // Jika jarak antara IP dan lokasi absensi terlalu jauh
-        if (ipDistance > 10000) { // Misalnya 10 km dianggap mencurigakan
-            return res.status(400).json({ message: `Deteksi lokasi mencurigakan. Jarak lokasi IP anda ${sayIpDistance} meter dari lokasi absensi.` });
-        }
-
         const distance = calculateDistance(
             officeLocation.latitude,
             officeLocation.longitude,
@@ -67,7 +39,7 @@ export const distanceValidation = async (req: Request, res: Response, next: Next
         
         const sayDistance = Math.round(distance);
 
-        if(distance > 5){
+        if(distance > 30){
             return res.status(400).json({ message: `Jarak anda ${sayDistance} meter` })
         } 
 
