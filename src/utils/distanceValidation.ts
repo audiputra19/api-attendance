@@ -25,12 +25,34 @@ const calculateDistance = (
 export const distanceValidation = async (req: Request, res: Response, next: NextFunction) => {
     const {latitude, longitude} = req.body;
     const officeLocation = { latitude: -6.915196237927959, longitude: 106.8742431897525 };
-    const userIp = req.ip;
-    console.log("ip:", userIp)
 
     try {
         if(!latitude || !longitude){
             return res.status(400).json({ message: 'Koordinat salah!' })
+        }
+
+        // Dapatkan IP asli dari header X-Forwarded-For
+        const ip = req.headers['x-forwarded-for'] as string || req.socket.remoteAddress || '127.0.0.1';
+
+        // Ambil hanya IP pertama jika ada beberapa IP di X-Forwarded-For
+        const clientIp = ip.split(',')[0];
+
+        // Panggil API geolokasi berdasarkan IP pengguna
+        const response = await axios.get(`https://ipapi.co/${clientIp}/json/`);
+        const { latitude: ipLat, longitude: ipLon } = response.data;
+
+        // Jika lokasi IP tidak ditemukan
+        if (!ipLat || !ipLon) {
+            return res.status(400).json({ message: 'Gagal mendapatkan lokasi dari IP.' });
+        }
+
+        // Hitung jarak antara lokasi IP dan koordinat absensi
+        const ipDistance = calculateDistance(ipLat, ipLon, latitude, longitude);
+        const sayIpDistance = Math.round(ipDistance);
+
+        // Jika jarak antara IP dan lokasi absensi terlalu jauh
+        if (ipDistance > 10000) { // Misalnya 10 km dianggap mencurigakan
+            return res.status(400).json({ message: `Deteksi lokasi mencurigakan. Jarak lokasi IP anda ${sayIpDistance} meter dari lokasi absensi.` });
         }
 
         const distance = calculateDistance(
@@ -45,18 +67,6 @@ export const distanceValidation = async (req: Request, res: Response, next: Next
         if(distance > 5){
             return res.status(400).json({ message: `Jarak anda ${sayDistance} meter` })
         } 
-
-        // Cek lokasi berdasarkan IP
-        const response = await axios.get(`https://ipapi.co/${userIp}/json/`);
-        const { latitude: ipLat, longitude: ipLon } = response.data;
-
-        // Hitung jarak antara lokasi IP dan lokasi GPS pengguna
-        const ipDistance = calculateDistance(ipLat, ipLon, latitude, longitude);
-
-        // Jika jarak dari IP ke GPS terlalu jauh (misalnya lebih dari 10 km), anggap Fake GPS
-        if (ipDistance > 15) {
-            return res.status(400).json({ message: `Deteksi lokasi mencurigakan` });
-        }
 
         next();
     } catch (error) {
