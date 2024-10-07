@@ -76,7 +76,7 @@ export const registerUser = async (req: Request, res: Response) => {
             return res.status(200).json({ message: 'Cek email untuk verifikasi akun' })
         } catch (error) {
             console.error('Error while sending email:', error);
-            return res.status(500).json({ message: 'Pastikan email sudah benar' });
+            return res.status(500).json({ message: 'Email gagal terkirim, coba lagi' });
         }
  
     } catch (error) {
