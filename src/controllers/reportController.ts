@@ -26,6 +26,7 @@ export const ReportAttendance = async (req: Request, res: Response) => {
                 hadir: report.hadir,
                 alpa: report.alpa,
                 telat: report.telat,
+                sakit: report.sakit,
                 izin: report.izin,
                 cuti: report.cuti
             }
