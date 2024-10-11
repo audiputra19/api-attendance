@@ -71,8 +71,14 @@ export const registerUser = async (req: Request, res: Response) => {
             await transporter.sendMail(mailOptions);
             console.log('Email sent successfully');
 
-            await connection.query('INSERT INTO user_temporary (nik, pass, email, token) VALUES (?, ?, ?, ?)', [nik, password, email, verifyToken]);
+            const [rowTemporary] = await connection.query<RowDataPacket[]>('SELECT * FROM user_temporary WHERE nik = ? AND pass = ? AND email = ?', [nik, password, email]);
+            const userTemp = rowTemporary as User[];
 
+            if(userTemp.length > 0){
+                await connection.query('DELETE FROM user_temporary WHERE nik = ? AND pass = ? AND email = ?', [nik, password, email]);
+            } 
+            
+            await connection.query('INSERT INTO user_temporary (nik, pass, email, token) VALUES (?, ?, ?, ?)', [nik, password, email, verifyToken]);
             return res.status(200).json({ message: 'Cek email untuk verifikasi akun' })
         } catch (error) {
             console.error('Error while sending email:', error);
