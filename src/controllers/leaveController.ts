@@ -7,7 +7,7 @@ import { Leave, LeaveReport } from "../interfaces/leave";
 const year = moment().tz('Asia/Jakarta').year();
 const lastYear = moment().tz('Asia/Jakarta').subtract(1, 'year').year();
 const date = moment().tz('Asia/Jakarta').format('YYYY-MM-DD');
-const firstDateInYear = moment().tz('Asia/Jakarta').set({ 'month': 1, 'date': 1 }).format('YYYY-MM-DD');
+const firstDateInYear = moment().tz('Asia/Jakarta').set({ 'month': 0, 'date': 1 }).format('YYYY-MM-DD');
 const leaveDate = moment().tz('Asia/Jakarta').set({ 'month': 2, 'date': 1 }).format('YYYY-MM-DD');
 const lastLeaveDate = moment().tz('Asia/Jakarta').subtract(1, 'year').set({ 'month': 2, 'date': 1 }).format('YYYY-MM-DD');
 
